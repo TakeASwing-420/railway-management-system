@@ -60,6 +60,10 @@ public class PlatformTicketController {
         if (platformTicket.getSerialNumber() == 0) {
             // Auto-assign a serial number if not provided
             int nextSerialNumber = platformTicketService.getNextSerialNumber();
+            if (nextSerialNumber == -1) {
+                logger.error("Maximum ticket limit reached.");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
             platformTicket.setSerialNumber(nextSerialNumber);
         }
         

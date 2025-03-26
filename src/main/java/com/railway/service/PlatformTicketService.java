@@ -14,7 +14,8 @@ import java.util.Optional;
 
 @Service
 public class PlatformTicketService {
-
+    
+    private int maxcount = 1000;
     private final PlatformTicketRepository platformTicketRepository;
     private static final Logger logger = LoggerFactory.getLogger(PlatformTicketService.class);
 
@@ -50,6 +51,7 @@ public class PlatformTicketService {
     }
     
     public int getNextSerialNumber() {
+        
         List<PlatformTicket> platformTickets = platformTicketRepository.findAll();
         if (platformTickets.isEmpty()) {
             return 1;
@@ -59,7 +61,10 @@ public class PlatformTicketService {
                 .mapToInt(PlatformTicket::getSerialNumber)
                 .max()
                 .orElse(0);
-                
+
+        if (maxSerialNumber >= maxcount) {
+            return -1;
+        } 
         return maxSerialNumber + 1;
     }
 }
