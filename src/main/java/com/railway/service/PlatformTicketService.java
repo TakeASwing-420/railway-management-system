@@ -2,6 +2,9 @@ package com.railway.service;
 
 import com.railway.model.PlatformTicket;
 import com.railway.repository.PlatformTicketRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,7 @@ import java.util.Optional;
 public class PlatformTicketService {
 
     private final PlatformTicketRepository platformTicketRepository;
+    private static final Logger logger = LoggerFactory.getLogger(PlatformTicketService.class);
 
     @Autowired
     public PlatformTicketService(PlatformTicketRepository platformTicketRepository) {
@@ -36,10 +40,12 @@ public class PlatformTicketService {
     }
     
     public PlatformTicket savePlatformTicket(PlatformTicket platformTicket) {
+        logger.info(platformTicket.toString() + " saved successfully.");
         return platformTicketRepository.save(platformTicket);
     }
     
     public void deletePlatformTicket(Long id) {
+        logger.info("PlatformTicketId" + id +"deleted successfully.");
         platformTicketRepository.deleteById(id);
     }
     
