@@ -74,7 +74,7 @@ public class PlatformTicketController {
     @PutMapping("/{id}")
     public ResponseEntity<PlatformTicket> updatePlatformTicket(@PathVariable Long id, @Valid @RequestBody PlatformTicket platformTicket) {
         if (!platformTicketService.getPlatformTicketById(id).isPresent()) {
-            logger.error("PlatformTicketId" + id + "not found.");
+            logger.error("PlatformTicketId " + id + " not found.");
             return ResponseEntity.notFound().build();
         }
         
@@ -86,7 +86,7 @@ public class PlatformTicketController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlatformTicket(@PathVariable Long id) {
         if (!platformTicketService.getPlatformTicketById(id).isPresent()) {
-            logger.error("PlatformTicketId" + id + "not found.");
+            logger.error("PlatformTicketId " + id + " not found.");
             return ResponseEntity.notFound().build();
         }
         

@@ -40,7 +40,7 @@ public class PassengerService {
     }
     
     public void deletePassenger(Long id) {
-        logger.info("PassengerId" + id +"deleted successfully.");
+        logger.info("PassengerId " + id +" deleted successfully.");
         passengerRepository.deleteById(id);
     }
     

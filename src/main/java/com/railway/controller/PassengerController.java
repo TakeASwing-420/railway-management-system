@@ -59,7 +59,7 @@ public class PassengerController {
     @PutMapping("/{id}")
     public ResponseEntity<Passenger> updatePassenger(@PathVariable Long id, @Valid @RequestBody Passenger passenger) {
         if (!passengerService.getPassengerById(id).isPresent()) {
-            logger.error("PassengerId" + id + "not found.");
+            logger.error("PassengerId " + id + " not found.");
             return ResponseEntity.notFound().build();
         }
         
@@ -71,7 +71,7 @@ public class PassengerController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePassenger(@PathVariable Long id) {
         if (!passengerService.getPassengerById(id).isPresent()) {
-            logger.error("PassengerId" + id + "not found.");
+            logger.error("PassengerId " + id + " not found.");
             return ResponseEntity.notFound().build();
         }
         

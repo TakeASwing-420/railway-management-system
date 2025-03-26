@@ -45,7 +45,7 @@ public class PlatformTicketService {
     }
     
     public void deletePlatformTicket(Long id) {
-        logger.info("PlatformTicketId" + id +"deleted successfully.");
+        logger.info("PlatformTicketId " + id +" deleted successfully.");
         platformTicketRepository.deleteById(id);
     }
     

@@ -49,7 +49,7 @@ public class TrainService {
     }
     
     public void deleteTrain(Long id) {
-        logger.info("TrainId" + id +"deleted successfully.");
+        logger.info("TrainId " + id +" deleted successfully.");
         trainRepository.deleteById(id);
     }
     

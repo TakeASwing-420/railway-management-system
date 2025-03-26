@@ -76,7 +76,7 @@ public class TrainController {
     @PostMapping
     public ResponseEntity<Train> createTrain(@Valid @RequestBody Train train) {
         if (trainService.trainExistsByNumber(train.getTrainNumber())) {
-            logger.error("TrainNumber" + train.getTrainNumber() + "already exists.");
+            logger.error("TrainNumber " + train.getTrainNumber() + " already exists.");
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
         Train savedTrain = trainService.saveTrain(train);
@@ -86,7 +86,7 @@ public class TrainController {
     @PutMapping("/{trainNumber}")
     public ResponseEntity<Train> updateTrain(@PathVariable String trainNumber, @Valid @RequestBody Train train) {
         if (!trainService.trainExistsByNumber(trainNumber)) {
-            logger.error("TrainNumber" + trainNumber + "not found.");
+            logger.error("TrainNumber " + trainNumber + " not found.");
             return ResponseEntity.notFound().build();
         }
         train.setTrainNumber(trainNumber);
@@ -97,7 +97,7 @@ public class TrainController {
     @DeleteMapping("/{trainNumber}")
     public ResponseEntity<Void> deleteTrain(@PathVariable String trainNumber) {
         if (!trainService.trainExistsByNumber(trainNumber)) {
-            logger.error("TrainNumber" + trainNumber + "not found.");
+            logger.error("TrainNumber " + trainNumber + " not found.");
             return ResponseEntity.notFound().build();
         }
         // Get the train first to know its ID
