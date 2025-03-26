@@ -2,6 +2,9 @@ package com.railway.controller;
 
 import com.railway.model.Passenger;
 import com.railway.service.PassengerService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,7 @@ import java.util.List;
 public class PassengerController {
 
     private final PassengerService passengerService;
+    private static final Logger logger = LoggerFactory.getLogger(PassengerController.class);
 
     @Autowired
     public PassengerController(PassengerService passengerService) {
@@ -55,6 +59,7 @@ public class PassengerController {
     @PutMapping("/{id}")
     public ResponseEntity<Passenger> updatePassenger(@PathVariable Long id, @Valid @RequestBody Passenger passenger) {
         if (!passengerService.getPassengerById(id).isPresent()) {
+            logger.error("PassengerId" + id + "not found.");
             return ResponseEntity.notFound().build();
         }
         
@@ -66,6 +71,7 @@ public class PassengerController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePassenger(@PathVariable Long id) {
         if (!passengerService.getPassengerById(id).isPresent()) {
+            logger.error("PassengerId" + id + "not found.");
             return ResponseEntity.notFound().build();
         }
         

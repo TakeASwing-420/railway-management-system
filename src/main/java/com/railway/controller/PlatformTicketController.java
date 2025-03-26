@@ -2,6 +2,9 @@ package com.railway.controller;
 
 import com.railway.model.PlatformTicket;
 import com.railway.service.PlatformTicketService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import java.util.List;
 public class PlatformTicketController {
 
     private final PlatformTicketService platformTicketService;
+    private static final Logger logger = LoggerFactory.getLogger(PlatformTicketController.class);
 
     @Autowired
     public PlatformTicketController(PlatformTicketService platformTicketService) {
@@ -70,6 +74,7 @@ public class PlatformTicketController {
     @PutMapping("/{id}")
     public ResponseEntity<PlatformTicket> updatePlatformTicket(@PathVariable Long id, @Valid @RequestBody PlatformTicket platformTicket) {
         if (!platformTicketService.getPlatformTicketById(id).isPresent()) {
+            logger.error("PlatformTicketId" + id + "not found.");
             return ResponseEntity.notFound().build();
         }
         
@@ -81,6 +86,7 @@ public class PlatformTicketController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlatformTicket(@PathVariable Long id) {
         if (!platformTicketService.getPlatformTicketById(id).isPresent()) {
+            logger.error("PlatformTicketId" + id + "not found.");
             return ResponseEntity.notFound().build();
         }
         
