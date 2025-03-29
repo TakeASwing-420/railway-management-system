@@ -15,6 +15,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/** @implNote I am intentionally hard coding data for the sample data...
+    I will be using the API to get the data in the future.
+    @author Deep Mondal*/ 
+
 @Service
 public class DataInitializationService {
     

@@ -2,6 +2,11 @@ package com.railway.model;
 
 import jakarta.persistence.*;
 
+/** @implNote I intentionally avoided using Lombok for this class 
+    because I was having issues while deserilization of JSON data from the API
+    
+    @author Deep Mondal*/ 
+
 @Entity
 @Table(name = "passengers")
 public class Passenger {

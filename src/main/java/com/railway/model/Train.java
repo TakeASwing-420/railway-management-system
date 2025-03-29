@@ -1,11 +1,13 @@
 package com.railway.model;
 
 import jakarta.persistence.*;
-
+ /** @implNote I intentionally avoided using Lombok for this class 
+    because I was having issues while deserilization of JSON data from the API
+    
+    @author Deep Mondal*/ 
 @Entity
 @Table(name = "trains")
-public class Train {
-    
+public class Train {    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
