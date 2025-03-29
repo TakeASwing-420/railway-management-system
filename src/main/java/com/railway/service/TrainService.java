@@ -56,4 +56,8 @@ public class TrainService {
     public boolean trainExistsByNumber(String trainNumber) {
         return trainRepository.findByTrainNumber(trainNumber).isPresent();
     }
+
+    public List<Train> getTrainsByFromStationAndToStation(String fromStation, String toStation) {
+        return trainRepository.findByFromStationIgnoreCaseAndToStationIgnoreCase(fromStation, toStation);
+    }
 }

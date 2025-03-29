@@ -41,24 +41,33 @@ public class TrainController {
     
     @GetMapping("/search")
     public ResponseEntity<?> searchTrains(
-            @RequestParam(required = false) String trainNumber,
-            @RequestParam(required = false) String destination) {
-        
-        // If train number is provided, search by train number
-        if (trainNumber != null && !trainNumber.isEmpty()) {
-            Optional<Train> train = trainService.getTrainByNumber(trainNumber);
-            return train.map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
-        }
-        
-        // If destination is provided, search by destination
-        if (destination != null && !destination.isEmpty()) {
-            List<Train> trains = trainService.getTrainsByDestination(destination);
+            @RequestParam(required = true) String fromStation,
+            @RequestParam(required = true) String toStation) {
+        try {
+            // Input validation
+            if (fromStation.trim().isEmpty() || toStation.trim().isEmpty()) {
+                return ResponseEntity
+                    .badRequest()
+                    .body("Both From Station and To Station must not be empty");
+            }
+
+            // Get trains matching the route
+            List<Train> trains = trainService.getTrainsByFromStationAndToStation(fromStation, toStation);
+            
+            // Return empty list if no trains found
+            if (trains.isEmpty()) {
+                return ResponseEntity
+                    .ok()
+                    .body(List.of()); // Returns empty list instead of 404 to maintain consistency
+            }
+
             return ResponseEntity.ok(trains);
+        } catch (Exception e) {
+            logger.error("Error searching trains: " + e.getMessage());
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error occurred while searching trains");
         }
-        
-        // If neither parameter is provided, return bad request
-        return ResponseEntity.badRequest().body("Either trainNumber or destination must be provided");
     }
     
     @GetMapping("/destination/{destination}")
