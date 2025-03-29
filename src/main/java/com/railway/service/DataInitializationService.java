@@ -85,17 +85,17 @@ public class DataInitializationService {
         
         List<Train> sampleTrains = new ArrayList<>();
         
-        sampleTrains.add(new Train("12345", "Delhi", "Mumbai", "08:00", "16:00", "Rajdhani Express"));
-        sampleTrains.add(new Train("23456", "Chennai", "Bangalore", "09:30", "12:30", "Shatabdi Express"));
-        sampleTrains.add(new Train("34567", "Kolkata", "Delhi", "19:00", "08:00", "Duronto Express"));
-        sampleTrains.add(new Train("45678", "Mumbai", "Goa", "07:15", "15:45", "Jan Shatabdi Express"));
-        sampleTrains.add(new Train("56789", "Hyderabad", "Chennai", "13:00", "20:30", "Charminar Express"));
-        sampleTrains.add(new Train("67890", "Ahmedabad", "Jaipur", "06:30", "14:00", "Gujarat Mail"));
-        sampleTrains.add(new Train("78901", "Pune", "Nagpur", "10:00", "18:00", "Vidarbha Express"));
-        sampleTrains.add(new Train("89012", "Lucknow", "Varanasi", "11:00", "19:00", "Ganga Express"));
-        sampleTrains.add(new Train("90123", "Bhopal", "Indore", "15:00", "17:30", "Malwa Express"));
-        sampleTrains.add(new Train("01234", "Patna", "Ranchi", "14:00", "20:00", "Karnataka Express"));
-        sampleTrains.add(new Train("13579", "Surat", "Vadodara", "12:00", "14:30", "Gujarat Express"));
+        sampleTrains.add(new Train("12345", "Delhi", "Mumbai", "08:00", "16:00", "Rajdhani Express", 500.0, 1200.0, 1800.0, 2500.0));
+        sampleTrains.add(new Train("23456", "Chennai", "Bangalore", "09:30", "12:30", "Shatabdi Express", 400.0, 1000.0, 1500.0, 2000.0));
+        sampleTrains.add(new Train("34567", "Kolkata", "Delhi", "19:00", "08:00", "Duronto Express", 600.0, 1400.0, 2000.0, 2800.0));
+        sampleTrains.add(new Train("45678", "Mumbai", "Goa", "07:15", "15:45", "Jan Shatabdi Express", 350.0, 900.0, 1300.0, 1800.0));
+        sampleTrains.add(new Train("56789", "Hyderabad", "Chennai", "13:00", "20:30", "Charminar Express", 450.0, 1100.0, 1600.0, 2200.0));
+        sampleTrains.add(new Train("67890", "Ahmedabad", "Jaipur", "06:30", "14:00", "Gujarat Mail", 400.0, 1000.0, 1500.0, 2000.0));
+        sampleTrains.add(new Train("78901", "Pune", "Nagpur", "10:00", "18:00", "Vidarbha Express", 450.0, 1100.0, 1600.0, 2200.0));
+        sampleTrains.add(new Train("89012", "Lucknow", "Varanasi", "11:00", "19:00", "Ganga Express", 350.0, 900.0, 1300.0, 1800.0));
+        sampleTrains.add(new Train("90123", "Bhopal", "Indore", "15:00", "17:30", "Malwa Express", 300.0, 800.0, 1200.0, 1600.0));
+        sampleTrains.add(new Train("01234", "Patna", "Ranchi", "14:00", "20:00", "Karnataka Express", 400.0, 1000.0, 1500.0, 2000.0));
+        sampleTrains.add(new Train("13579", "Surat", "Vadodara", "12:00", "14:30", "Gujarat Express", 300.0, 800.0, 1200.0, 1600.0));
         
         trainService.saveAllTrains(sampleTrains);
         logger.info("Created {} sample trains", sampleTrains.size());

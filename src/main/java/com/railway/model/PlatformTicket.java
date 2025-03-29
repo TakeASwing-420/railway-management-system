@@ -20,6 +20,9 @@ public class PlatformTicket {
     @Column(name = "tickets_count", nullable = false)
     private int ticketsCount;
     
+    @Column(name = "coach_type", nullable = false)
+    private String coachType;
+    
     @Column(name = "issue_time", nullable = false)
     private LocalDateTime issueTime;
     
@@ -28,19 +31,22 @@ public class PlatformTicket {
     }
     
     // Full constructor
-    public PlatformTicket(Long id, int serialNumber, String trainNumber, int ticketsCount, LocalDateTime issueTime) {
+    public PlatformTicket(Long id, int serialNumber, String trainNumber, int ticketsCount, 
+                         String coachType, LocalDateTime issueTime) {
         this.id = id;
         this.serialNumber = serialNumber;
         this.trainNumber = trainNumber;
         this.ticketsCount = ticketsCount;
+        this.coachType = coachType;
         this.issueTime = issueTime;
     }
     
     // Constructor without id for easier creation
-    public PlatformTicket(int serialNumber, String trainNumber, int ticketsCount) {
+    public PlatformTicket(int serialNumber, String trainNumber, int ticketsCount, String coachType) {
         this.serialNumber = serialNumber;
         this.trainNumber = trainNumber;
         this.ticketsCount = ticketsCount;
+        this.coachType = coachType;
         this.issueTime = LocalDateTime.now();
     }
     
@@ -77,6 +83,14 @@ public class PlatformTicket {
         this.ticketsCount = ticketsCount;
     }
     
+    public String getCoachType() {
+        return coachType;
+    }
+    
+    public void setCoachType(String coachType) {
+        this.coachType = coachType;
+    }
+    
     public LocalDateTime getIssueTime() {
         return issueTime;
     }
@@ -90,6 +104,7 @@ public class PlatformTicket {
         return "Platform Ticket #" + serialNumber +
                " - Train Number: " + trainNumber +
                ", Tickets Count: " + ticketsCount +
+               ", Coach Type: " + coachType +
                ", Issue Time: " + issueTime;
     }
 }

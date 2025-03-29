@@ -28,18 +28,36 @@ public class Train {
     @Column(name = "train_name", nullable = false)
     private String trainName;
     
+    @Column(name = "sleeper_price", nullable = false)
+    private double sleeperPrice;
+    
+    @Column(name = "ac_3tier_price", nullable = false)
+    private double ac3TierPrice;
+    
+    @Column(name = "ac_2tier_price", nullable = false)
+    private double ac2TierPrice;
+    
+    @Column(name = "ac_1tier_price", nullable = false)
+    private double ac1TierPrice;
+    
     // Default constructor required by JPA
     public Train() {
     }
     
     // Full constructor
-    public Train(String trainNumber, String fromStation, String toStation, String departureTime, String arrivalTime, String trainName) {
+    public Train(String trainNumber, String fromStation, String toStation, String departureTime, 
+                String arrivalTime, String trainName, double sleeperPrice, double ac3TierPrice, 
+                double ac2TierPrice, double ac1TierPrice) {
         this.trainNumber = trainNumber;
         this.fromStation = fromStation;
         this.toStation = toStation;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
         this.trainName = trainName;
+        this.sleeperPrice = sleeperPrice;
+        this.ac3TierPrice = ac3TierPrice;
+        this.ac2TierPrice = ac2TierPrice;
+        this.ac1TierPrice = ac1TierPrice;
     }
     
     // Getters and setters
@@ -99,6 +117,38 @@ public class Train {
         this.trainName = trainName;
     }
     
+    public double getSleeperPrice() {
+        return sleeperPrice;
+    }
+    
+    public void setSleeperPrice(double sleeperPrice) {
+        this.sleeperPrice = sleeperPrice;
+    }
+    
+    public double getAc3TierPrice() {
+        return ac3TierPrice;
+    }
+    
+    public void setAc3TierPrice(double ac3TierPrice) {
+        this.ac3TierPrice = ac3TierPrice;
+    }
+    
+    public double getAc2TierPrice() {
+        return ac2TierPrice;
+    }
+    
+    public void setAc2TierPrice(double ac2TierPrice) {
+        this.ac2TierPrice = ac2TierPrice;
+    }
+    
+    public double getAc1TierPrice() {
+        return ac1TierPrice;
+    }
+    
+    public void setAc1TierPrice(double ac1TierPrice) {
+        this.ac1TierPrice = ac1TierPrice;
+    }
+    
     @Override
     public String toString() {
         return "Train Number: " + trainNumber + 
@@ -106,6 +156,10 @@ public class Train {
                "\nFrom: " + fromStation + 
                "\nTo: " + toStation + 
                "\nDeparture Time: " + departureTime + 
-               "\nArrival Time: " + arrivalTime;
+               "\nArrival Time: " + arrivalTime +
+               "\nSleeper Price: " + sleeperPrice +
+               "\nAC 3-Tier Price: " + ac3TierPrice +
+               "\nAC 2-Tier Price: " + ac2TierPrice +
+               "\nAC 1-Tier Price: " + ac1TierPrice;
     }
 }
