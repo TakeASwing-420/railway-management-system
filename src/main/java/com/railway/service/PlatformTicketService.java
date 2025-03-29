@@ -20,8 +20,8 @@ public class PlatformTicketService {
     private static final Logger logger = LoggerFactory.getLogger(PlatformTicketService.class);
 
     @Autowired
-    public PlatformTicketService(PlatformTicketRepository platformTicketRepository, long maxcount) {
-        this.maxcount = maxcount;
+    public PlatformTicketService(PlatformTicketRepository platformTicketRepository) {
+        this.maxcount = 1000; // Set a default value for maxcount
         this.platformTicketRepository = platformTicketRepository;
     }
     
