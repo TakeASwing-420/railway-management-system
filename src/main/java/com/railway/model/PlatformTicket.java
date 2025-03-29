@@ -16,7 +16,7 @@ public class PlatformTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "serial_number")
+    @Column(name = "serial_number", unique = true, nullable = false)
     private int serialNumber;
     
     @Column(name = "train_number", nullable = false)
@@ -28,7 +28,7 @@ public class PlatformTicket {
     @Column(name = "coach_type", nullable = false)
     private String coachType;
     
-    @Column(name = "issue_time", nullable = false)
+    @Column(name = "issue_time")
     private LocalDateTime issueTime;
     
     // Default constructor required by JPA

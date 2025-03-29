@@ -2,7 +2,6 @@ package com.railway.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainFrame extends JFrame {
@@ -71,9 +70,7 @@ public class MainFrame extends JFrame {
 
     private JMenuItem createMenuItem(String text, ActionListener action) {
         JMenuItem menuItem = new JMenuItem(text);
-        menuItem.setPreferredSize(new Dimension(150, 20));
-        menuItem.setHorizontalAlignment(SwingConstants.CENTER);
-        menuItem.setVerticalAlignment(SwingConstants.TOP);
+        menuItem.setPreferredSize(new Dimension(150, 30));
         menuItem.addActionListener(action);
         return menuItem;
     }

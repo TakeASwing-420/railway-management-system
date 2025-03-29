@@ -15,7 +15,7 @@ public class Passenger {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "serial_number")
+    @Column(name = "serial_number",unique = true, nullable = false)
     private int serialNumber;
     
     @Column(name = "train_number", nullable = false)
@@ -33,29 +33,34 @@ public class Passenger {
     @Column(name = "seat_status", nullable = false)
     private String seatStatus;
     
-    // Default constructor required by JPA
-    public Passenger() {
-    }
-    
-    // Full constructor
-    public Passenger(Long id, int serialNumber, String trainNumber, String name, int age, String gender, String seatStatus) {
-        this.id = id;
-        this.serialNumber = serialNumber;
-        this.trainNumber = trainNumber;
-        this.name = name;
-        this.age = age;
-        this.gender = gender;
-        this.seatStatus = seatStatus;
+    @Column(name = "coach_type", nullable = false)
+    private String coachType;
+        
+        // Default constructor required by JPA
+        public Passenger() {
+        }
+        
+        // Full constructor
+        public Passenger(Long id, int serialNumber, String trainNumber, String name, int age, String gender, String seatStatus, String coachType) {
+            this.id = id;
+            this.serialNumber = serialNumber;
+            this.trainNumber = trainNumber;
+            this.name = name;
+            this.age = age;
+            this.gender = gender;
+            this.seatStatus = seatStatus;
+            this.coachType = coachType;
     }
     
     // Constructor without id for easier creation
-    public Passenger(int serialNumber, String trainNumber, String name, int age, String gender, String seatStatus) {
+    public Passenger(int serialNumber, String trainNumber, String name, int age, String gender, String seatStatus, String coachType) {
         this.serialNumber = serialNumber;
         this.trainNumber = trainNumber;
         this.name = name;
         this.age = age;
         this.gender = gender;
         this.seatStatus = seatStatus;
+        this.coachType = coachType;
     }
     
     // Getters and setters
@@ -82,6 +87,14 @@ public class Passenger {
     public void setTrainNumber(String trainNumber) {
         this.trainNumber = trainNumber;
     }
+
+    public String getCoachType() {
+        return coachType;
+    }
+
+    public void setCoachType(String coachType) {
+        this.coachType = coachType;
+    } 
     
     public String getName() {
         return name;
@@ -121,6 +134,7 @@ public class Passenger {
                " - Name: " + name +
                ", Age: " + age +
                ", Gender: " + gender +
-               ", Seat Status: " + seatStatus;
+               ", Seat Status: " + seatStatus +
+               ", Coach Type: " + coachType;
     }
 }
