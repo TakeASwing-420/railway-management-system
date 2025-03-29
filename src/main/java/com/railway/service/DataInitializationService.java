@@ -66,7 +66,7 @@ public class DataInitializationService {
         
         if (trainService.trainExistsByNumber("23456")) {
             samplePassengers.add(new Passenger(1, "23456", "Amit Kumar", 35, "Male", "Confirmed"));
-            samplePassengers.add(new Passenger(2, "23456", "Sneha Patel", 30, "Female", "Waitlist"));
+            samplePassengers.add(new Passenger(2, "23456", "Sneha Patel", 30, "Female", "Confirmed"));
         }
         
         for (Passenger passenger : samplePassengers) {
@@ -90,6 +90,12 @@ public class DataInitializationService {
         sampleTrains.add(new Train("34567", "Kolkata", "Delhi", "19:00", "08:00", "Duronto Express"));
         sampleTrains.add(new Train("45678", "Mumbai", "Goa", "07:15", "15:45", "Jan Shatabdi Express"));
         sampleTrains.add(new Train("56789", "Hyderabad", "Chennai", "13:00", "20:30", "Charminar Express"));
+        sampleTrains.add(new Train("67890", "Ahmedabad", "Jaipur", "06:30", "14:00", "Gujarat Mail"));
+        sampleTrains.add(new Train("78901", "Pune", "Nagpur", "10:00", "18:00", "Vidarbha Express"));
+        sampleTrains.add(new Train("89012", "Lucknow", "Varanasi", "11:00", "19:00", "Ganga Express"));
+        sampleTrains.add(new Train("90123", "Bhopal", "Indore", "15:00", "17:30", "Malwa Express"));
+        sampleTrains.add(new Train("01234", "Patna", "Ranchi", "14:00", "20:00", "Karnataka Express"));
+        sampleTrains.add(new Train("13579", "Surat", "Vadodara", "12:00", "14:30", "Gujarat Express"));
         
         trainService.saveAllTrains(sampleTrains);
         logger.info("Created {} sample trains", sampleTrains.size());

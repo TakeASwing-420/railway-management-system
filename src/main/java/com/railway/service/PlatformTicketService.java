@@ -15,12 +15,13 @@ import java.util.Optional;
 @Service
 public class PlatformTicketService {
     
-    private int maxcount = 1000;
+    private long maxcount;
     private final PlatformTicketRepository platformTicketRepository;
     private static final Logger logger = LoggerFactory.getLogger(PlatformTicketService.class);
 
     @Autowired
-    public PlatformTicketService(PlatformTicketRepository platformTicketRepository) {
+    public PlatformTicketService(PlatformTicketRepository platformTicketRepository, long maxcount) {
+        this.maxcount = maxcount;
         this.platformTicketRepository = platformTicketRepository;
     }
     
