@@ -8,10 +8,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+
 import com.railway.model.Train;
 import com.railway.api.TrainApiHelper;
-import com.railway.model.Passenger;
-import com.railway.api.PassengerApiHelper;
+import com.railway.model.PlatformTicket;
+import com.railway.api.PlatformTicketApiHelper;
 
 public class UserPanel extends JPanel {
     private JTextField sourceStationField;
@@ -164,21 +165,41 @@ public class UserPanel extends JPanel {
         // Create arrays to store labels and values
         JLabel[] valueLabels = new JLabel[labels.length];
         
+        // Create larger fonts
+        Font labelFont = new Font("Arial", Font.BOLD, 14);
+        Font valueFont = new Font("Arial", Font.PLAIN, 14);
+        
+        // Set fixed dimensions for labels and value labels
+        Dimension labelSize = new Dimension(150, 30);  // Width: 150px, Height: 30px
+        Dimension valueSize = new Dimension(200, 30);  // Width: 200px, Height: 30px
+        
         for (int i = 0; i < labels.length; i++) {
             gbc.gridx = 0;
             gbc.gridy = i;
-            ticketDisplay.add(new JLabel(labels[i]), gbc);
+            JLabel label = new JLabel(labels[i]);
+            label.setFont(labelFont);
+            label.setPreferredSize(labelSize);  // Set fixed size for label
+            label.setMinimumSize(labelSize); 
+            ticketDisplay.add(label, gbc);
             
             gbc.gridx = 1;
-            valueLabels[i] = new JLabel("---");
+            valueLabels[i] = new JLabel(""); 
+            valueLabels[i].setFont(valueFont);
+            valueLabels[i].setBackground(Color.WHITE);
+            valueLabels[i].setOpaque(true);
+            valueLabels[i].setPreferredSize(valueSize);  // Set fixed size for value label
+            valueLabels[i].setMinimumSize(valueSize);     // Ensure minimum size
+            valueLabels[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));  // Add thin black border
+            valueLabels[i].setHorizontalAlignment(JLabel.CENTER);  // Center the text
             ticketDisplay.add(valueLabels[i], gbc);
         }
         
-        // Add refresh button
+        // Add refresh button with larger font
         gbc.gridx = 0;
-        gbc.gridy = labels.length;
+        gbc.gridy = labels.length + 1;
         gbc.gridwidth = 2;
         JButton refreshButton = new JButton("Refresh Ticket");
+        refreshButton.setFont(labelFont);  // Set larger font for button
         refreshButton.addActionListener(e -> {
             try {
                 // Get ticket ID from user
@@ -195,16 +216,23 @@ public class UserPanel extends JPanel {
                 
                 // Convert ticket ID to Long and fetch passenger details
                 Long ticketId = Long.parseLong(ticketIdStr.trim());
-                Passenger passenger = PassengerApiHelper.getPassengerDetails(ticketId);
+                PlatformTicket ticket = PlatformTicketApiHelper.fetchTicket(ticketId);
                 
                 // Update the labels with passenger details
-                valueLabels[0].setText(String.valueOf(passenger.getId()));
-                valueLabels[1].setText(String.valueOf(passenger.getSerialNumber()));
-                valueLabels[2].setText(passenger.getName());
-                valueLabels[3].setText(String.valueOf(passenger.getAge()));
-                valueLabels[4].setText(passenger.getGender()); 
-                valueLabels[5].setText(passenger.getCoachType());
-                valueLabels[6].setText(passenger.getSeatStatus());                
+                valueLabels[0].setText(String.valueOf(ticket.getId()));
+                valueLabels[0].setHorizontalAlignment(JLabel.CENTER);
+                valueLabels[1].setText(ticket.getPassenger().getName());
+                valueLabels[1].setHorizontalAlignment(JLabel.CENTER);
+                valueLabels[2].setText(String.valueOf(ticket.getPassenger().getAge()));
+                valueLabels[2].setHorizontalAlignment(JLabel.CENTER);
+                valueLabels[3].setText(ticket.getPassenger().getGender());
+                valueLabels[3].setHorizontalAlignment(JLabel.CENTER);
+                valueLabels[4].setText(ticket.getTrain().getTrainNumber());
+                valueLabels[4].setHorizontalAlignment(JLabel.CENTER);
+                valueLabels[5].setText(ticket.getPassenger().getCoachType());
+                valueLabels[5].setHorizontalAlignment(JLabel.CENTER);
+                valueLabels[6].setText(ticket.getPassenger().getSeatStatus());                
+                valueLabels[6].setHorizontalAlignment(JLabel.CENTER);
                 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(
@@ -309,7 +337,6 @@ public class UserPanel extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
         // Create text fields
-        JTextField ticketCountField = new JTextField(10);
         JTextField usernameField = new JTextField(10);
         JTextField ageField = new JTextField(10);
         JComboBox<String> genderCombo = new JComboBox<>(new String[]{"Male", "Female"});
@@ -320,10 +347,6 @@ public class UserPanel extends JPanel {
         String trainNumber = trainTable.getValueAt(selectedRow, 0).toString();
         
         // Add components to panel
-        gbc.gridx = 0; gbc.gridy = 0;
-        panel.add(new JLabel("Ticket Count:"), gbc);
-        gbc.gridx = 1; gbc.gridy = 0;
-        panel.add(ticketCountField, gbc);
         
         gbc.gridx = 0; gbc.gridy = 1;
         panel.add(new JLabel("Username:"), gbc);
@@ -357,7 +380,6 @@ public class UserPanel extends JPanel {
         if (result == JOptionPane.OK_OPTION) {
             try {
                 // Validate inputs
-                int ticketCount = Integer.parseInt(ticketCountField.getText().trim());
                 String username = usernameField.getText().trim();
                 int age = Integer.parseInt(ageField.getText().trim());
                 String gender = (String) genderCombo.getSelectedItem();
@@ -368,7 +390,7 @@ public class UserPanel extends JPanel {
                 }
                 
                 // Use the API helper to book ticket
-                TrainApiHelper.bookTicket(trainNumber, ticketCount, coachType, username, gender, age);
+                TrainApiHelper.bookTicket(trainNumber, coachType, username, gender, age);
                 
                 JOptionPane.showMessageDialog(
                     this,

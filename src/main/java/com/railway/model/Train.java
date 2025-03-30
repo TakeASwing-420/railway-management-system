@@ -1,17 +1,25 @@
 package com.railway.model;
 
 import jakarta.persistence.*;
- /** @implNote I intentionally avoided using Lombok for this class 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+/** @implNote I intentionally avoided using Lombok for this class 
     because I was having issues while deserilization of JSON data from the API
     
     @author Deep Mondal*/ 
 @Entity
 @Table(name = "trains")
+@JsonIgnoreProperties({"platformTickets"})
 public class Train {    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
+    @OneToMany(mappedBy = "train", fetch = FetchType.LAZY)
+    private List<PlatformTicket> platformTickets;
+
     @Column(name = "train_number", unique = true, nullable = false)
     private String trainNumber;
     
@@ -151,17 +159,28 @@ public class Train {
         this.ac1TierPrice = ac1TierPrice;
     }
     
+    public List<PlatformTicket> getPlatformTickets() {
+        return platformTickets;
+    }
+    
+    public void setPlatformTickets(List<PlatformTicket> platformTickets) {
+        this.platformTickets = platformTickets;
+    }
+    
     @Override
     public String toString() {
-        return "Train Number: " + trainNumber + 
-               "\nTrain Name: " + trainName +
-               "\nFrom: " + fromStation + 
-               "\nTo: " + toStation + 
-               "\nDeparture Time: " + departureTime + 
-               "\nArrival Time: " + arrivalTime +
-               "\nSleeper Price: " + sleeperPrice +
-               "\nAC 3-Tier Price: " + ac3TierPrice +
-               "\nAC 2-Tier Price: " + ac2TierPrice +
-               "\nAC 1-Tier Price: " + ac1TierPrice;
+        return "Train{" +
+                "id=" + id +
+                ", trainNumber='" + trainNumber + '\'' +
+                ", fromStation='" + fromStation + '\'' +
+                ", toStation='" + toStation + '\'' +
+                ", departureTime='" + departureTime + '\'' +
+                ", arrivalTime='" + arrivalTime + '\'' +
+                ", trainName='" + trainName + '\'' +
+                ", sleeperPrice=" + sleeperPrice +
+                ", ac3TierPrice=" + ac3TierPrice +
+                ", ac2TierPrice=" + ac2TierPrice +
+                ", ac1TierPrice=" + ac1TierPrice +
+                '}';
     }
 }

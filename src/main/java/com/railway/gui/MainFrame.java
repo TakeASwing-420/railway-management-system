@@ -3,7 +3,9 @@ package com.railway.gui;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MainFrame extends JFrame {
     private JPanel mainPanel;
     private UserPanel userPanel;
@@ -90,11 +92,5 @@ public class MainFrame extends JFrame {
         menuBar.add(adminMenu);
         
         setJMenuBar(menuBar);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new MainFrame().setVisible(true);
-        });
     }
 } 

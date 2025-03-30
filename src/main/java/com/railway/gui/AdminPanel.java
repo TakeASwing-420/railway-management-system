@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.util.List;
+import com.railway.model.PlatformTicket;
+import com.railway.api.AdminApiHelper;
 
 public class AdminPanel extends JPanel {
     private JPanel sidebarPanel;
@@ -31,8 +35,9 @@ public class AdminPanel extends JPanel {
     private void createSidebar() {
         sidebarPanel = new JPanel();
         sidebarPanel.setLayout(new BoxLayout(sidebarPanel, BoxLayout.Y_AXIS));
+        sidebarPanel.setPreferredSize(new Dimension(150, getHeight()));
         sidebarPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        sidebarPanel.setBackground(new Color(240, 240, 240));
+        
         
         // Create sidebar buttons
         JButton lastHourButton = createSidebarButton("Query Ticket Sales for Last Hour");
@@ -74,76 +79,69 @@ public class AdminPanel extends JPanel {
     }
 
     private void showLastHourSales() {
-        // Create panel for last hour sales
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        // Create table for displaying results
-        String[] columns = {"Time", "Train Number", "Train Name", "Tickets Sold", "Revenue"};
-        Object[][] data = {}; // Will be populated from API
-        resultTable = new JTable(data, columns);
-        
-        JScrollPane scrollPane = new JScrollPane(resultTable);
-        panel.add(scrollPane, BorderLayout.CENTER);
-        
-        // Add refresh button
-        JButton refreshButton = new JButton("Refresh");
-        refreshButton.addActionListener(e -> refreshLastHourSales());
-        panel.add(refreshButton, BorderLayout.SOUTH);
-        
-        // Show the panel
-        contentPanel.add(panel, "LAST_HOUR");
-        cardLayout.show(contentPanel, "LAST_HOUR");
-        
-        // Initial data load
-        refreshLastHourSales();
+        try {
+            LocalDateTime endTime = LocalDateTime.now();
+            LocalDateTime startTime = endTime.minusHours(1);
+            
+            List<PlatformTicket> tickets = AdminApiHelper.getTicketsInTimeRange(startTime, endTime);
+            displayTickets(tickets);
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Error fetching last hour sales: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void showTrainSales() {
-        // Create panel for train sales
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        try {
+            String trainNumber = JOptionPane.showInputDialog(
+                this,
+                "Enter Train Number:",
+                "Train Sales Query",
+                JOptionPane.QUESTION_MESSAGE
+            );
+            
+            if (trainNumber != null && !trainNumber.trim().isEmpty()) {
+                List<PlatformTicket> tickets = AdminApiHelper.getTicketsByTrainNumber(trainNumber.trim());
+                displayTickets(tickets);
+            }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Error fetching train sales: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void displayTickets(List<PlatformTicket> tickets) {
+        String[] columns = {"Ticket ID", "Passenger Name", "Train Number", "Issue Time", "Coach Type", "Seat Status"};
+        Object[][] data = new Object[tickets.size()][columns.length];
         
-        // Create search form
-        JPanel searchForm = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JTextField trainNumberField = new JTextField(10);
-        JButton searchButton = new JButton("Search");
-        searchButton.addActionListener(e -> searchTrainSales(trainNumberField.getText()));
+        for (int i = 0; i < tickets.size(); i++) {
+            PlatformTicket ticket = tickets.get(i);
+            data[i] = new Object[]{
+                ticket.getId(),
+                ticket.getPassenger().getName(),
+                ticket.getTrain().getTrainNumber(),
+                ticket.getIssueTime(),
+                ticket.getPassenger().getCoachType(),
+                ticket.getPassenger().getSeatStatus()
+            };
+        }
         
-        searchForm.add(new JLabel("Train Number:"));
-        searchForm.add(trainNumberField);
-        searchForm.add(searchButton);
-        
-        // Create table for displaying results
-        String[] columns = {"Date", "Tickets Sold", "Revenue"};
-        Object[][] data = {}; // Will be populated from API
         resultTable = new JTable(data, columns);
-        
         JScrollPane scrollPane = new JScrollPane(resultTable);
         
-        panel.add(searchForm, BorderLayout.NORTH);
-        panel.add(scrollPane, BorderLayout.CENTER);
+        // Create a new panel for the table
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
         
-        // Show the panel
-        contentPanel.add(panel, "TRAIN_SALES");
-        cardLayout.show(contentPanel, "TRAIN_SALES");
-    }
-
-    private void refreshLastHourSales() {
-        // TODO: Implement API call to get last hour sales
-        // This will be connected to your backend service
-        JOptionPane.showMessageDialog(this,
-            "Refreshing last hour sales data...",
-            "Loading",
-            JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void searchTrainSales(String trainNumber) {
-        // TODO: Implement API call to get train sales
-        // This will be connected to your backend service
-        JOptionPane.showMessageDialog(this,
-            "Searching sales data for train " + trainNumber,
-            "Loading",
-            JOptionPane.INFORMATION_MESSAGE);
+        // Show the table panel
+        contentPanel.removeAll();
+        contentPanel.add(tablePanel, "RESULTS");
+        cardLayout.show(contentPanel, "RESULTS");
     }
 } 

@@ -1,9 +1,6 @@
 package com.railway.controller;
 
-import com.railway.dto.PlatformTicketRequest;
-import com.railway.model.Passenger;
 import com.railway.model.PlatformTicket;
-import com.railway.service.PassengerService;
 import com.railway.service.PlatformTicketService;
 
 import org.slf4j.Logger;
@@ -23,14 +20,11 @@ import java.util.List;
 public class PlatformTicketController {
 
     private final PlatformTicketService platformTicketService;
-    private final PassengerService passengerService;
-
     private static final Logger logger = LoggerFactory.getLogger(PlatformTicketController.class);
 
     @Autowired
-    public PlatformTicketController(PlatformTicketService platformTicketService, PassengerService passengerService) {
+    public PlatformTicketController(PlatformTicketService platformTicketService) {
         this.platformTicketService = platformTicketService;
-        this.passengerService = passengerService;
     }
 
     @GetMapping
@@ -62,34 +56,12 @@ public class PlatformTicketController {
     }
 
     @PostMapping
-    public ResponseEntity<PlatformTicket> createPlatformTicket(@Valid @RequestBody PlatformTicketRequest request) {
-        PlatformTicket platformTicket = request.getPlatformTicket();
-
-        if (platformTicket.getSerialNumber() == 0) {
-            int nextSerialNumber = platformTicketService.getNextSerialNumber();
-            if (nextSerialNumber == -1) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-            platformTicket.setSerialNumber(nextSerialNumber);
+    public ResponseEntity<PlatformTicket> createPlatformTicket(@Valid @RequestBody PlatformTicket request) {
+        if (request.getIssueTime() == null) {
+            request.setIssueTime(LocalDateTime.now());
         }
 
-        if (platformTicket.getIssueTime() == null) {
-            platformTicket.setIssueTime(LocalDateTime.now());
-        }
-
-        PlatformTicket savedPlatformTicket = platformTicketService.savePlatformTicket(platformTicket);
-
-        Passenger passenger = new Passenger();
-        passenger.setSerialNumber(platformTicket.getSerialNumber());
-        passenger.setTrainNumber(platformTicket.getTrainNumber());
-        passenger.setCoachType(platformTicket.getCoachType());
-        passenger.setName(request.getUsername());
-        passenger.setGender(request.getGender());
-        passenger.setAge(request.getAge());
-        passenger.setSeatStatus("Confirmed");
-
-        passengerService.savePassenger(passenger);
-
+        PlatformTicket savedPlatformTicket = platformTicketService.savePlatformTicket(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPlatformTicket);
     }
 

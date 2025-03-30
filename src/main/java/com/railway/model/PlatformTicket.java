@@ -4,112 +4,92 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 /** @implNote I intentionally avoided using Lombok for this class 
-    because I was having issues while deserilization of JSON data from the API
+    because I was having issues while deserialization of JSON data from the API
     
     @author Deep Mondal*/ 
 
 @Entity
 @Table(name = "platform_tickets")
 public class PlatformTicket {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(name = "serial_number", unique = true, nullable = false)
-    private int serialNumber;
-    
-    @Column(name = "train_number", nullable = false)
-    private String trainNumber;
-    
-    @Column(name = "tickets_count", nullable = false)
-    private int ticketsCount;
-    
-    @Column(name = "coach_type", nullable = false)
-    private String coachType;
-    
-    @Column(name = "issue_time")
+    private long serialNumber;
+
+    @OneToOne(cascade = CascadeType.PERSIST) // Automatically persist Passenger when PlatformTicket is saved
+    @JoinColumn(name = "passenger_id", referencedColumnName = "id", unique = true)
+    private Passenger passenger;
+
+    @ManyToOne // No cascade here because Train is pre-existing
+    @JoinColumn(name = "train_id", referencedColumnName = "id")
+    private Train train;
+
+    @Column(name = "issue_time", nullable = false)
     private LocalDateTime issueTime;
-    
+
     // Default constructor required by JPA
-    public PlatformTicket() {
-    }
-    
+    public PlatformTicket() {}
+
     // Full constructor
-    public PlatformTicket(Long id, int serialNumber, String trainNumber, int ticketsCount, 
-                         String coachType, LocalDateTime issueTime) {
-        this.id = id;
-        this.serialNumber = serialNumber;
-        this.trainNumber = trainNumber;
-        this.ticketsCount = ticketsCount;
-        this.coachType = coachType;
+    public PlatformTicket(long serialNumber, Passenger passenger, Train train, LocalDateTime issueTime) {
+        this.passenger = passenger;
+        this.train = train;
         this.issueTime = issueTime;
-    }
-    
-    // Constructor without id for easier creation
-    public PlatformTicket(int serialNumber, String trainNumber, int ticketsCount, String coachType) {
         this.serialNumber = serialNumber;
-        this.trainNumber = trainNumber;
-        this.ticketsCount = ticketsCount;
-        this.coachType = coachType;
-        this.issueTime = LocalDateTime.now();
     }
-    
+
     // Getters and setters
     public Long getId() {
         return id;
     }
-    
+
     public void setId(Long id) {
         this.id = id;
     }
-    
-    public int getSerialNumber() {
-        return serialNumber;
+
+    public Passenger getPassenger() {
+        return passenger;
     }
-    
-    public void setSerialNumber(int serialNumber) {
-        this.serialNumber = serialNumber;
+
+    public void setPassenger(Passenger passenger) {
+        this.passenger = passenger;
     }
-    
-    public String getTrainNumber() {
-        return trainNumber;
+
+    public Train getTrain() {
+        return train;
     }
-    
-    public void setTrainNumber(String trainNumber) {
-        this.trainNumber = trainNumber;
+
+    public void setTrain(Train train) {
+        this.train = train;
     }
-    
-    public int getTicketsCount() {
-        return ticketsCount;
-    }
-    
-    public void setTicketsCount(int ticketsCount) {
-        this.ticketsCount = ticketsCount;
-    }
-    
-    public String getCoachType() {
-        return coachType;
-    }
-    
-    public void setCoachType(String coachType) {
-        this.coachType = coachType;
-    }
-    
+
     public LocalDateTime getIssueTime() {
         return issueTime;
     }
-    
+
     public void setIssueTime(LocalDateTime issueTime) {
         this.issueTime = issueTime;
     }
-    
+
+    public long getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(long serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
     @Override
     public String toString() {
-        return "Platform Ticket #" + serialNumber +
-               " - Train Number: " + trainNumber +
-               ", Tickets Count: " + ticketsCount +
-               ", Coach Type: " + coachType +
-               ", Issue Time: " + issueTime;
+        return "PlatformTicket{" +
+                "id=" + id +
+                ", serialNumber=" + serialNumber +
+                ", passenger=" + passenger +
+                ", train=" + train +
+                ", issueTime=" + issueTime +
+                '}';
     }
 }

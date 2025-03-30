@@ -21,42 +21,22 @@ public class PassengerService {
     public PassengerService(PassengerRepository passengerRepository) {
         this.passengerRepository = passengerRepository;
     }
-    
+
     public List<Passenger> getAllPassengers() {
         return passengerRepository.findAll();
     }
-    
+
     public Optional<Passenger> getPassengerById(Long id) {
         return passengerRepository.findById(id);
     }
-    
-    public List<Passenger> getPassengersByTrainNumber(String trainNumber) {
-        return passengerRepository.findByTrainNumber(trainNumber);
-    }
-    
+
     public Passenger savePassenger(Passenger passenger) {
         logger.info(passenger.toString() + " saved successfully.");
         return passengerRepository.save(passenger);
     }
-    
+
     public void deletePassenger(Long id) {
-        logger.info("PassengerId " + id +" deleted successfully.");
+        logger.info("PassengerId " + id + " deleted successfully.");
         passengerRepository.deleteById(id);
-    }
-    
-    public int getNextSerialNumber(String trainNumber) {
-        List<Passenger> passengers = passengerRepository.findByTrainNumber(trainNumber);
-        if (passengers.isEmpty()) {
-            return 1;
-        }
-        
-        int maxSerialNumber = 0;
-        for (Passenger passenger : passengers) {
-            if (passenger.getSerialNumber() > maxSerialNumber) {
-                maxSerialNumber = passenger.getSerialNumber();
-            }
-        }
-        
-        return maxSerialNumber + 1;
     }
 }
