@@ -104,8 +104,8 @@ public class DataInitializationService {
         // Create passengers and tickets for Train 23456
         Train train2 = trainService.getTrainByNumber("23456").orElse(null);
         if (train2 != null) {
-            Passenger passenger3 = new Passenger("Amit Kumar", 35, "Male", "Confirmed", "AC3");
-            Passenger passenger4 = new Passenger("Sneha Patel", 30, "Female", "Confirmed", "AC3");
+            Passenger passenger3 = new Passenger("Amit Kumar", 35, "Male", "Confirmed", "AC 3 tier");
+            Passenger passenger4 = new Passenger("Sneha Patel", 30, "Female", "Confirmed", "AC 3 tier");
 
             PlatformTicket ticket3 = new PlatformTicket(serialNumberCounter++, passenger3, train2, LocalDateTime.now());
             PlatformTicket ticket4 = new PlatformTicket(serialNumberCounter++, passenger4, train2, LocalDateTime.now());

@@ -3,6 +3,7 @@ package com.railway.api;
 import okhttp3.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.railway.model.PlatformTicket;
 import com.railway.model.Train;
 import java.util.List;
 
@@ -31,12 +32,11 @@ public class TrainApiHelper {
             throw new Exception("Failed to search trains: " + response.code());
         }
 
-        // Parse the JSON response into a list of Train objects
         String jsonResponse = response.body().string();
         return mapper.readValue(jsonResponse, new TypeReference<List<Train>>() {});
     }
 
-    public static void bookTicket(String trainNumber, String coachType,
+    public static Long bookTicket(String trainNumber, String coachType,
             String username, String gender, int age) throws Exception {
         String jsonBody = String.format(
                 "{\n" +
@@ -69,5 +69,10 @@ public class TrainApiHelper {
         if (!response.isSuccessful()) {
             throw new Exception("Failed to book ticket: " + response.code());
         }
+
+        // Parse response to get the ticket ID
+        String jsonResponse = response.body().string();
+        PlatformTicket ticket = mapper.readValue(jsonResponse, PlatformTicket.class);
+        return ticket.getId();
     }
 }

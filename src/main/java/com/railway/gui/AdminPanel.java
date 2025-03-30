@@ -1,11 +1,13 @@
 package com.railway.gui;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.time.LocalDateTime;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+
 import com.railway.model.PlatformTicket;
 import com.railway.api.AdminApiHelper;
 
@@ -13,7 +15,16 @@ public class AdminPanel extends JPanel {
     private JPanel sidebarPanel;
     private JPanel contentPanel;
     private CardLayout cardLayout;
-    private JTable resultTable;
+    private JTable lastHourTable;
+    private JTable trainSalesTable;
+    private DefaultTableModel lastHourModel;
+    private DefaultTableModel trainSalesModel;
+
+    // Add color constants for different coach types
+    private static final Color AC1_COLOR = new Color(93, 107, 230);    // Indigo
+    private static final Color AC2_COLOR = new Color(116, 147, 232);   // Medium blue
+    private static final Color AC3_COLOR = new Color(145, 185, 234);   // Light blue
+    private static final Color SLEEPER_COLOR = new Color(187, 214, 237); // Very light blue
 
     public AdminPanel() {
         setLayout(new BorderLayout());
@@ -25,8 +36,16 @@ public class AdminPanel extends JPanel {
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
         
-        // Add initial empty panel
-        contentPanel.add(new JPanel(), "EMPTY");
+        // Create panels
+        JPanel lastHourPanel = createLastHourPanel();
+        JPanel trainSalesPanel = createTrainSalesPanel();
+        
+        // Add panels to card layout
+        contentPanel.add(lastHourPanel, "LAST_HOUR");
+        contentPanel.add(trainSalesPanel, "TRAIN_SALES");
+        
+        // Show last hour panel by default
+        cardLayout.show(contentPanel, "LAST_HOUR");
         
         add(sidebarPanel, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
@@ -35,113 +54,185 @@ public class AdminPanel extends JPanel {
     private void createSidebar() {
         sidebarPanel = new JPanel();
         sidebarPanel.setLayout(new BoxLayout(sidebarPanel, BoxLayout.Y_AXIS));
-        sidebarPanel.setPreferredSize(new Dimension(150, getHeight()));
+        sidebarPanel.setPreferredSize(new Dimension(235, getHeight()));
         sidebarPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
+        JButton lastHourButton = new JButton("Last Hour Report");
+        JButton trainSalesButton = new JButton("Sales for Train");
         
-        // Create sidebar buttons
-        JButton lastHourButton = createSidebarButton("Query Ticket Sales for Last Hour");
-        JButton trainSalesButton = createSidebarButton("Query Ticket Sales for a Train");
+        // Style the buttons
+        lastHourButton.setMaximumSize(new Dimension(150, 40));
+        trainSalesButton.setMaximumSize(new Dimension(150, 40));
+        
+        // Add action listeners
+        lastHourButton.addActionListener(e -> cardLayout.show(contentPanel, "LAST_HOUR"));
+        trainSalesButton.addActionListener(e -> cardLayout.show(contentPanel, "TRAIN_SALES"));
         
         // Add buttons to sidebar
         sidebarPanel.add(lastHourButton);
         sidebarPanel.add(Box.createVerticalStrut(10));
         sidebarPanel.add(trainSalesButton);
-        
-        // Add action listeners
-        lastHourButton.addActionListener(e -> showLastHourSales());
-        trainSalesButton.addActionListener(e -> showTrainSales());
     }
 
-    private JButton createSidebarButton(String text) {
-        JButton button = new JButton(text);
-        button.setAlignmentX(Component.LEFT_ALIGNMENT);
-        button.setMaximumSize(new Dimension(200, 40));
-        button.setBackground(new Color(240, 240, 240));
-        button.setBorderPainted(false);
-        button.setFocusPainted(false);
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    private JPanel createLastHourPanel() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        // Add hover effect
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(230, 230, 230));
-                button.repaint();
-            }
-            
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(240, 240, 240));
-                button.repaint();
-            }
-        });
+        // Create table for displaying results
+        String[] columns = {"Time", "Train Number", "Train Name", "Passenger Name", "Coach Type"};
+        lastHourModel = new DefaultTableModel(columns, 0);
+        lastHourTable = new JTable(lastHourModel);
         
-        return button;
+        // Add custom renderer for row colors
+        lastHourTable.setDefaultRenderer(Object.class, new CoachTypeColorRenderer());
+        
+        JScrollPane scrollPane = new JScrollPane(lastHourTable);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        
+        // Add refresh button
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(e -> refreshLastHourSales());
+        panel.add(refreshButton, BorderLayout.SOUTH);
+        
+        return panel;
     }
 
-    private void showLastHourSales() {
+    private JPanel createTrainSalesPanel() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // Create search form
+        JPanel searchForm = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JTextField trainNumberField = new JTextField(10);
+        JButton searchButton = new JButton("Search");
+        searchButton.addActionListener(e -> searchTrainSales(trainNumberField.getText()));
+        
+        searchForm.add(new JLabel("Train Number:"));
+        searchForm.add(trainNumberField);
+        searchForm.add(searchButton);
+        
+        // Create table for displaying results
+        String[] columns = {"Time", "Train Number", "Train Name", "Passenger Name", "Coach Type"};
+        trainSalesModel = new DefaultTableModel(columns, 0);
+        trainSalesTable = new JTable(trainSalesModel);
+        
+        // Add custom renderer for row colors
+        trainSalesTable.setDefaultRenderer(Object.class, new CoachTypeColorRenderer());
+        
+        JScrollPane scrollPane = new JScrollPane(trainSalesTable);
+        
+        panel.add(searchForm, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        
+        return panel;
+    }
+
+    private void refreshLastHourSales() {
         try {
-            LocalDateTime endTime = LocalDateTime.now();
-            LocalDateTime startTime = endTime.minusHours(1);
+            // Clear existing table data
+            lastHourModel.setRowCount(0);
             
-            List<PlatformTicket> tickets = AdminApiHelper.getTicketsInTimeRange(startTime, endTime);
-            displayTickets(tickets);
+            // Fetch tickets from last hour
+            List<PlatformTicket> tickets = AdminApiHelper.getTicketsInLastHour();
             
-        } catch (Exception e) {
+            // Format for displaying time
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            
+            // Add tickets to table
+            for (PlatformTicket ticket : tickets) {
+                lastHourModel.addRow(new Object[]{
+                    ticket.getIssueTime().format(formatter),
+                    ticket.getTrain().getTrainNumber(),
+                    ticket.getTrain().getTrainName(),
+                    ticket.getPassenger().getName(),
+                    ticket.getPassenger().getCoachType()
+                });
+            }
+            
+        } catch (IOException ex) {
             JOptionPane.showMessageDialog(this,
-                "Error fetching last hour sales: " + e.getMessage(),
+                "Error fetching ticket data: " + ex.getMessage(),
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void showTrainSales() {
+    private void searchTrainSales(String trainNumber) {
+        if (trainNumber.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Please enter a train number",
+                "Validation Error",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         try {
-            String trainNumber = JOptionPane.showInputDialog(
-                this,
-                "Enter Train Number:",
-                "Train Sales Query",
-                JOptionPane.QUESTION_MESSAGE
-            );
+            // Clear existing table data
+            trainSalesModel.setRowCount(0);
             
-            if (trainNumber != null && !trainNumber.trim().isEmpty()) {
-                List<PlatformTicket> tickets = AdminApiHelper.getTicketsByTrainNumber(trainNumber.trim());
-                displayTickets(tickets);
+            // Fetch tickets for the specified train
+            List<PlatformTicket> tickets = AdminApiHelper.getTicketsByTrainNumber(trainNumber);
+            
+            // Format for displaying time
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            
+            // Add tickets to table
+            for (PlatformTicket ticket : tickets) {
+                trainSalesModel.addRow(new Object[]{
+                    ticket.getIssueTime().format(formatter),
+                    ticket.getTrain().getTrainNumber(),
+                    ticket.getTrain().getTrainName(),
+                    ticket.getPassenger().getName(),
+                    ticket.getPassenger().getCoachType()
+                });
             }
             
-        } catch (Exception e) {
+        } catch (IOException ex) {
             JOptionPane.showMessageDialog(this,
-                "Error fetching train sales: " + e.getMessage(),
+                "Error fetching ticket data: " + ex.getMessage(),
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void displayTickets(List<PlatformTicket> tickets) {
-        String[] columns = {"Ticket ID", "Passenger Name", "Train Number", "Issue Time", "Coach Type", "Seat Status"};
-        Object[][] data = new Object[tickets.size()][columns.length];
-        
-        for (int i = 0; i < tickets.size(); i++) {
-            PlatformTicket ticket = tickets.get(i);
-            data[i] = new Object[]{
-                ticket.getId(),
-                ticket.getPassenger().getName(),
-                ticket.getTrain().getTrainNumber(),
-                ticket.getIssueTime(),
-                ticket.getPassenger().getCoachType(),
-                ticket.getPassenger().getSeatStatus()
-            };
+    // Add custom renderer class
+    private class CoachTypeColorRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table,
+                    value, isSelected, hasFocus, row, column);
+            
+            if (!isSelected) {  // Only color when row is not selected
+                // Get coach type from the last column (Coach Type)
+                String coachType = (String) table.getModel().getValueAt(row, 4);
+                
+                switch (coachType) {
+                    case "AC 1 tier":
+                        c.setBackground(AC1_COLOR);
+                        break;
+                    case "AC 2 tier":
+                        c.setBackground(AC2_COLOR);
+                        break;
+                    case "AC 3 tier":
+                        c.setBackground(AC3_COLOR);
+                        break;
+                    case "Sleeper":
+                        c.setBackground(SLEEPER_COLOR);
+                        break;
+                    default:
+                        c.setBackground(Color.WHITE);
+                }
+                
+                // Set text color to white for darker backgrounds
+                if (coachType.equals("AC 1 tier") || coachType.equals("AC 2 tier")) {
+                    c.setForeground(Color.WHITE);
+                } else {
+                    c.setForeground(Color.BLACK);
+                }
+            }
+            
+            return c;
         }
-        
-        resultTable = new JTable(data, columns);
-        JScrollPane scrollPane = new JScrollPane(resultTable);
-        
-        // Create a new panel for the table
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.add(scrollPane, BorderLayout.CENTER);
-        
-        // Show the table panel
-        contentPanel.removeAll();
-        contentPanel.add(tablePanel, "RESULTS");
-        cardLayout.show(contentPanel, "RESULTS");
     }
 } 

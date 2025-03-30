@@ -390,11 +390,11 @@ public class UserPanel extends JPanel {
                 }
                 
                 // Use the API helper to book ticket
-                TrainApiHelper.bookTicket(trainNumber, coachType, username, gender, age);
+                Long ticketId = TrainApiHelper.bookTicket(trainNumber, coachType, username, gender, age);
                 
                 JOptionPane.showMessageDialog(
                     this,
-                    "Ticket booked successfully!",
+                    "Ticket ID: " + ticketId,
                     "Success",
                     JOptionPane.INFORMATION_MESSAGE
                 );

@@ -2,53 +2,54 @@ package com.railway.api;
 
 import com.railway.model.PlatformTicket;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import okhttp3.*;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Arrays;
 
 public class AdminApiHelper {
-    private static final String BASE_URL = "http://localhost:5000/api";
-    private static final OkHttpClient client = new OkHttpClient().newBuilder().build();
-    private static final ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule());
-    private static final MediaType mediaType = MediaType.parse("text/plain");
-    private static final RequestBody emptyBody = RequestBody.create(mediaType, "");
+	private static final String BASE_URL = "http://localhost:5000/api";
+	private static final OkHttpClient client = new OkHttpClient().newBuilder().build();
+	private static final ObjectMapper mapper = new ObjectMapper()
+			.findAndRegisterModules() // Register all modules including JPA module
+			.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-    public static List<PlatformTicket> getTicketsByTrainNumber(String trainNumber) throws IOException {
-        Request request = new Request.Builder()
-                .url(BASE_URL + "/platform-tickets/train/" + trainNumber)
-                .method("GET", emptyBody)
-                .build();
+	public static List<PlatformTicket> getTicketsByTrainNumber(String trainNumber) throws IOException {
+		Request request = new Request.Builder()
+				.url(BASE_URL + "/platform-tickets/train/" + trainNumber)
+				.get()
+				.build();
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response code: " + response);
-            }
-            String responseBody = response.body().string();
-            return Arrays.asList(objectMapper.readValue(responseBody, PlatformTicket[].class));
-        }
-    }
+		// Execute the request
+		Response response = client.newCall(request).execute();
+		String jsonResponse = response.body().string();
+		return mapper.readValue(jsonResponse, new TypeReference<List<PlatformTicket>>() {
+		});
 
-    public static List<PlatformTicket> getTicketsInTimeRange(LocalDateTime startTime, LocalDateTime endTime) throws IOException {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        String startTimeStr = startTime.format(formatter);
-        String endTimeStr = endTime.format(formatter);
+	}
 
-        Request request = new Request.Builder()
-                .url(BASE_URL + "/platform-tickets/timerange?startTime=" + startTimeStr + "&endTime=" + endTimeStr)
-                .method("GET", emptyBody)
-                .build();
+	public static List<PlatformTicket> getTicketsInLastHour() throws IOException {
+		// Get current time in IST
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime oneHourBefore = now.minusHours(1);
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response code: " + response);
-            }
-            String responseBody = response.body().string();
-            return Arrays.asList(objectMapper.readValue(responseBody, PlatformTicket[].class));
-        }
-    }
-} 
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+		String startTimeStr = oneHourBefore.format(formatter);
+		String endTimeStr = now.format(formatter);
+
+		Request request = new Request.Builder()
+				.url(BASE_URL + "/platform-tickets/timerange?startTime=" + startTimeStr + "&endTime=" + endTimeStr)
+				.get() // Using get() instead of method("GET", emptyBody)
+				.build();
+
+		// Execute the request
+		Response response = client.newCall(request).execute();
+		String jsonResponse = response.body().string();
+		return mapper.readValue(jsonResponse, new TypeReference<List<PlatformTicket>>() {
+		});
+	}
+}
