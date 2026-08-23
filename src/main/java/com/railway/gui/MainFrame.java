@@ -81,12 +81,12 @@ public class MainFrame extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         
         // User Menu
-        JMenu userMenu = new JMenu("User");
-        userMenu.add(createMenuItem("User Panel", e -> cardLayout.show(mainPanel, "USER")));
+        JMenu userMenu = new JMenu("General");
+        userMenu.add(createMenuItem("General Panel", e -> cardLayout.show(mainPanel, "USER")));
         
         // Admin Menu
-        JMenu adminMenu = new JMenu("Admin");
-        adminMenu.add(createMenuItem("Admin Panel", e -> cardLayout.show(mainPanel, "ADMIN")));
+        JMenu adminMenu = new JMenu("Advanced");
+        adminMenu.add(createMenuItem("Advanced Panel", e -> cardLayout.show(mainPanel, "ADMIN")));
         
         menuBar.add(userMenu);
         menuBar.add(adminMenu);

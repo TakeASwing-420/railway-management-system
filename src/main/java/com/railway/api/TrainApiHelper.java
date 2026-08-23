@@ -56,7 +56,7 @@ public class TrainApiHelper {
                 username, age, gender, coachType, trainNumber);
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, jsonBody);
+        RequestBody body = RequestBody.create(jsonBody, mediaType);
 
         Request request = new Request.Builder()
                 .url(BASE_URL + "/platform-tickets")
